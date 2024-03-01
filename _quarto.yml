@@ -1,0 +1,29 @@
+project:
+  type: website
+  output-dir: "docs"
+  pre-render:
+    - code/create_posts.R
+
+website:
+  title: "Susan Vanderplas"
+  site-url: "srvanderplas.github.io"
+  navbar:
+    right:
+      - about.qmd
+      - text: "More"
+        menu:
+          - publications.qmd
+          - talks.qmd
+      - icon: github
+        href: https://github.com/srvanderplas
+      - icon: twitter
+        href: https://twitter.com/srvanderplas
+      - icon: mastodon
+        href: https://mastodon.social/@srvanderplas
+format:
+  html:
+    theme: pulse
+    css: styles.css
+
+
+freeze: auto
