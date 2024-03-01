@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+/.quarto/
+*-listing.json
+*.html.md
+site_libs/
+docs/
+_freeze/
