@@ -1,22 +1,32 @@
 source("code/common-post-functions.R")
 source("code/image-functions.R")
 
-format_abstract <- function(x) {
-  dplyr::if_else(
-    is.na(x), "",
-    paste("## Abstract",
-          paste("> ", x, collapse = "\n"),
-          sep = "\n\n"))
+format_post_name <- function(name) {
+  name %>%
+    stringr::str_to_lower() %>%
+    stringr::str_replace_all("[[:punct:][:space:]]{1,}", "-")
 }
 
-format_slides <- function(x) {
-  dplyr::if_else(
-    is.na(x), "",
-    paste("## Slides",
-          sprintf("<iframe src='%s' height='auto' width='80%%'>
-                        </iframe>",
-                  x),
-          sep = "\n\n"))
+make_abstract <- function(x) {
+  c("## Abstract", paste("> ", x, collapse = "\n"), "", "")
+}
+
+format_abstract <- function(x) {
+  y <- x %>%
+    str_split(., "\n", simplify = F) %>%
+    map(make_abstract) %>%
+    map_chr(~paste(., collapse = "\n"))
+
+  dplyr::if_else(is.na(x), "", y)
+}
+
+format_slides <- function(x, width = 800, height = 500) {
+  y <- paste(
+    "## Slides",
+    sprintf("<iframe src='%s' height='%spx' width='%spx'></iframe>",
+            x, width, height),
+    sep = "\n\n")
+  dplyr::if_else(is.na(x), "", y)
 }
 
 format_keywords <- function(x) {
@@ -26,7 +36,6 @@ format_keywords <- function(x) {
   y <- purrr::map(y, append, values = "Talk")
   y
 }
-
 
 format_event <- function(df) {
   stopifnot(all(c("Event2", "Event", "EventType", "Location") %in% names(df)))
@@ -79,6 +88,7 @@ talk_to_params <- function(df) {
   post_params
 }
 
+
 # This function writes out a qmd file in the correct directory corresponding to a post
 create_talk <- function(params, path = "posts/talks") {
 
@@ -105,8 +115,9 @@ create_talk <- function(params, path = "posts/talks") {
     "    code-copy: true",
     "---",
     " ",
-    params$slides,
-    params$event
+    params$abstract,
+    params$event,
+    params$slides
   )
 
   writeLines(md_lines, con = file.path(path, post_name))
