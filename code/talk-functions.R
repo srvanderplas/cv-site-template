@@ -20,8 +20,9 @@ format_slides <- function(x) {
 }
 
 format_keywords <- function(x) {
-  y <- stringr::str_split(x, ", ", simplify = F)
-  y <- purrr::map(y, ~.[nchar(.) > 0])
+  y <- stringr::str_split(x, ", ", simplify = F) %>%
+    purrr::map(stringr::str_squish) %>%
+    purrr::map(~.[nchar(.) > 0])
   y <- purrr::map(y, append, values = "Talk")
   y
 }
